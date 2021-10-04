@@ -1,0 +1,40 @@
+{
+    "name": "faithfm/auth-laravel-v1",
+    "description": "Laravel Authentication using Auth0 (developed for Faith FM projects)",
+    "type": "library",
+    "homepage": "https://github.com/faithfm/auth-laravel-v1",
+    "keywords": [
+        "template",
+        "composer",
+        "package"
+    ],
+    "license": "GPL-3.0-or-later",
+    "authors": [
+        {
+            "name": "Michael Engelbrecht",
+            "email": "michaelndani@gmail.com"
+        },
+        {
+            "name": "Lidia Ordonez",
+            "email": "lidiaordonez18@gmail.com"
+        }
+    ],
+    "require": {
+        "php": "^7.2.5",
+        "illuminate/support": "^8.0",
+        "auth0/login": "^6.4",
+        "owen-it/laravel-auditing": "^10.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "FaithFM\\AuthLaravel\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "FaithFM\\AuthLaravel\\AuthLaravelServiceProvider"
+            ]
+        }
+    }
+}
