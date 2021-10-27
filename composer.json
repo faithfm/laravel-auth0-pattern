@@ -1,8 +1,8 @@
 {
-    "name": "faithfm/auth-laravel-v1",
+    "name": "faithfm/laravel-auth0-pattern",
     "description": "Laravel Authentication using Auth0 (developed for Faith FM projects)",
     "type": "library",
-    "homepage": "https://github.com/faithfm/auth-laravel-v1",
+    "homepage": "https://github.com/faithfm/laravel-auth0-pattern",
     "keywords": [
         "template",
         "composer",
@@ -27,13 +27,13 @@
     },
     "autoload": {
         "psr-4": {
-            "FaithFM\\AuthLaravel\\": "src/"
+            "FaithFM\\Auth0Pattern\\": "src/"
         }
     },
     "extra": {
         "laravel": {
             "providers": [
-                "FaithFM\\AuthLaravel\\AuthLaravelServiceProvider"
+                "FaithFM\\Auth0Pattern\\Auth0PatternServiceProvider"
             ]
         }
     }

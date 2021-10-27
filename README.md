@@ -1,11 +1,11 @@
-# auth-laravel-v1
+# laravel-auth0-pattern
 
-Laravel AuthN+AuthZ (for Faith FM projects):
+An Auth0-based library/pattern for Laravel Authentication and Authorisation:  (developed for Faith FM web projects)
 
-* AuthN (Authentication) implemented using Auth0
-* AuthZ (Authorization)  implemented using local user-permissions table (with Laravel/Vue-JS helpers)
+* **AuthN** (Authentication) implemented using **Auth0**
+* **AuthZ** (Authorization)  with simple **'user-permissions' table** (combined with Laravel/Vue-JS helper Gates & Checks)
 
-This repo is a composer package created to improve consistency across our existing Faith FM Laravel+Vue projects.  (Previously we had been trying to maintain multiple copies of these files across multiple projects).
+This repo is a PHP Composer package created to improve consistency across our existing Faith FM Laravel+Vue projects.  (Previously we had been trying to maintain multiple copies of these files across multiple projects).
 
 At present, Laravel Artisan's vendor-publishing functionality is simply being used to clone a set of consistent files across our projects.
 
@@ -18,13 +18,13 @@ Add the following to your project's `composer.json` file:
     ...
     "require": {
         ...
-        "faithfm/auth-laravel-v1": "^1.0"
+        "faithfm/laravel-auth0-pattern": "^1.0"
     }
     ...
     "repositories": [
         {
             "type": "vcs",
-            "url": "https://github.com/faithfm/auth-laravel-v1"
+            "url": "https://github.com/faithfm/laravel-auth0-pattern"
         }
     ]
     ...
@@ -35,7 +35,7 @@ Add the following to your project's `composer.json` file:
 (If you are using homestead run this commands inside homestead ssh)
 
 ```bash
-composer update faithfm/auth-laravel-v1
+composer update faithfm/laravel-auth0-pattern
 php artisan vendor:publish --tag=auth-once-off-installation
 php artisan vendor:publish --tag=auth-every-update-force-clones --force
 php artisan migrate ?????
@@ -105,7 +105,7 @@ Need to remove on installation:
 * `routes/web.php` - Auth0 stuff
 * `config/app.php` - Auth0\Login\LoginServiceProvider::class,
 * `app/Providers/AuthServiceProvider.php` - all defined-permission stuff
-* `app/Providers/AppServiceProvider.php` - Auth0 + CustomUserRepository bindings
+* `app/Providers/AppServiceProvider.php` - Auth0 + Auth0PatternUserRepository bindings
 
 ### Troubleshooting
 
@@ -121,13 +121,13 @@ Need to remove on installation:
 ## Updating the package
 
 ```bash
-composer update faithfm/auth-laravel-v1
+composer update faithfm/laravel-auth0-pattern
 php artisan vendor:publish --tag=auth-every-update-force-clones --force
 ```
 
 ## Usage
 
-* Define permissions your app will use (in `Repositories/AuthPermissionsRepository.php`).
+* Define permissions your app will use (in `Repositories/AuthPermissionList.php`).
 
 * Add relevant permissions for each of your users (in the "user_permissions" table).
   * Note: the 'restrictions' column is a JSON field that can be used to define specific restrictions/qualifications to a privilege.  Ie: our Media project uses 'filter' and 'fields' to restrict users to editing specific files/fields.
@@ -192,4 +192,4 @@ if (restrictions.status == "SOME PERMITTED") {
 
 * We're manually adding (double-up) lots of packages' ServicesProviders in config/app.php - that are automatically registered by their own composer.json / extras section.  (Ie: AuditingServiceProvider).  Need to audit/cleanup.
 
-* Can we come up with a better package name - AuthLaravel/AuthLaravelServiceProvider / auth-laravel-v1  ?????
+* Can we come up with a better package name - AuthLaravel/Auth0PatternServiceProvider / laravel-auth0-pattern  ?????

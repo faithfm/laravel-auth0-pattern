@@ -1,11 +1,6 @@
 <?php
-/**
- * This file is cloned / force-published from the "auth-laravel-v1" composer package.
- *    WARNING: Local modifications will be overwritten when the package is updated.
- *             See https://github.com/faithfm/auth-laravel-v1 for more details.
- */
 
-namespace App\Http\Controllers\Auth;
+namespace FaithFM\Auth0Pattern;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -13,7 +8,7 @@ use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 
-class Auth0IndexController extends Controller
+class Auth0PatternController extends Controller
 {
     /**
      * Redirect to the Auth0 hosted login page
@@ -27,8 +22,21 @@ class Auth0IndexController extends Controller
             // Use the key below to get an access token for your API.
             // 'audience' => config('laravel-auth0.api_identifier'),
         ];
-        return App::make('auth0')->login(null, null, $authorize_params);
+        return app('auth0')->login(null, null, $authorize_params);
     }
+
+    
+    /**
+     * Handle Auth0 callback redirect (after login)... and redirect back to app.
+     *
+     * @return mixed
+     */
+    public function callback()
+    {
+        // Auth0's Laravel library has already defined this controller method for us
+        return app()->call('Auth0\Login\Auth0Controller@callback');
+    }
+
 
     /**
      * Log out of Auth0

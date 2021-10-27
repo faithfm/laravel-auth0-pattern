@@ -1,12 +1,12 @@
 <?php
 
-namespace FaithFM\AuthLaravel;
+namespace FaithFM\Auth0Pattern;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Gate;
-use App\Repositories\AuthPermissionsRepository;
+use App\Repositories\AuthPermissionList;
 
-class AuthLaravelServiceProvider extends ServiceProvider
+class Auth0PatternServiceProvider extends ServiceProvider
 {
     /**
      * Register any package services.
@@ -17,7 +17,7 @@ class AuthLaravelServiceProvider extends ServiceProvider
     {
         $this->app->bind(
             \Auth0\Login\Contract\Auth0UserRepository::class,
-            \App\Repositories\CustomUserRepository::class,
+            \FaithFM\Auth0Pattern\Auth0PatternUserRepository::class,
         );
     }
 
@@ -43,9 +43,9 @@ class AuthLaravelServiceProvider extends ServiceProvider
         ], 'auth-every-update-force-clones');
 
 
-        // Create gates for each permission an application defines in the AuthPermissionsRepository
-        if (class_exists(AuthPermissionsRepository::class)) {
-            foreach (AuthPermissionsRepository::DEFINED_PERMISSIONS as $permission) {
+        // Create gates for each permission an application defines in the AuthPermissionList
+        if (class_exists(AuthPermissionList::class)) {
+            foreach (AuthPermissionList::DEFINED_PERMISSIONS as $permission) {
                 Gate::define($permission, function ($user) use ($permission) {
                     return $user->permissions->firstWhere('permission', $permission) !== null;     // check if the specified permission exists in the current User's UserPermissions model
                 });
@@ -53,7 +53,7 @@ class AuthLaravelServiceProvider extends ServiceProvider
         }
 
         // Create routes
-        $this->loadRoutesFrom(__DIR__.'/routes');
+        $this->loadRoutesFrom(__DIR__.'/routes/auth0pattern-web.php');
 
         // Load database migrations
         $this->loadMigrationsFrom(__DIR__.'/database/migrations');

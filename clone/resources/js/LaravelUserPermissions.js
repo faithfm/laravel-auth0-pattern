@@ -1,7 +1,7 @@
 /**
- * This file is cloned / force-published from the "auth-laravel-v1" composer package.
+ * This file is cloned / force-published from the "laravel-auth0-pattern" composer package.
  *    WARNING: Local modifications will be overwritten when the package is updated.
- *             See https://github.com/faithfm/auth-laravel-v1 for more details.
+ *             See https://github.com/faithfm/laravel-auth0-pattern for more details.
  */
 
 // DEPENDENCY NOTE: We are expecting LaravelAppGlobals.users.permissions from our Laravel app, passed in via our Blade template.
