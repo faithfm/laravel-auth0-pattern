@@ -9,8 +9,7 @@
         "package"
     ],
     "license": "GPL-3.0-or-later",
-    "authors": [
-        {
+    "authors": [{
             "name": "Michael Engelbrecht",
             "email": "michaelndani@gmail.com"
         },
@@ -20,10 +19,10 @@
         }
     ],
     "require": {
-        "php": "^7.2.5",
+        "php": "^7.2",
         "illuminate/support": "^8.0",
-        "auth0/login": "^6.4",
-        "owen-it/laravel-auditing": "^10.0"
+        "auth0/login": "^6.0",
+        "owen-it/laravel-auditing": "^10.0 || ^11.0 || ^12.0"
     },
     "autoload": {
         "psr-4": {
