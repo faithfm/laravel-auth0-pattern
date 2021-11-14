@@ -32,13 +32,13 @@ class EditUsersTable extends Migration
             });
         }
 
-        if (Schema::hasColumns('users', 'email_verified_at')) {
+        if (Schema::hasColumn('users', 'email_verified_at')) {
             Schema::table('users', function (Blueprint $table) {
                 $table->dropColumn('email_verified_at');
             });
         }
 
-        if (Schema::hasColumns('users', 'password')) {
+        if (Schema::hasColumn('users', 'password')) {
             Schema::table('users', function (Blueprint $table) {
                 $table->dropColumn('password');
             });
