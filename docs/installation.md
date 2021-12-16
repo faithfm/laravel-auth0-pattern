@@ -56,40 +56,6 @@ AUTH0_CLIENT_ID=XXXXXXXXXXXXXXXX
 AUTH0_CLIENT_SECRET=XXXXXXXXXXXX
 ```
 
-#### 3. `config/auth.php` file:
-
-Replace the default 'eloquent' users provider with our 'auth0 provider (***`User Providers` section***):
-
-```php
-    'providers' => [
-        'users' => [
-            'driver' => 'auth0',
-            'model' => App\Models\User::class,
-        ],
-        // 'users' => [
-        //     'driver' => 'eloquent',
-        //     'model' => App\Models\User::class,
-        // ],
-
-        // 'users' => [
-        //     'driver' => 'database',
-        //     'table' => 'users',
-        // ],
-    ],
-```
-
-Also make sure that the  ***`Authentication Guards`*** section is using the **`'users'`** provider in the **`'web'`** guard :
-
-```php
-    'guards' => [
-        'web' => [
-            'driver' => 'session',
-            'provider' => 'users',
-        ],
-
-        ...
-    ],
-```
 
 ## UPDATING THE PACKAGE
 

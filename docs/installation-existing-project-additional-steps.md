@@ -12,8 +12,6 @@ The following additional steps were required for our projects that had utilised 
 
 * `routes/web.php` - remove the Auth0 routes (login/logout/callback/profile), as these will be automatically defined in `auth0pattern-web.php`.
 
-* `config/app.php` - remove the 'providers' entry for **Auth0\Login\LoginServiceProvider::class,**, as these are automatically registered by the Auth0 library (and were a double-up).
-
 * `app/Providers/AppServiceProvider.php` - in the `register()` method remove the code that binds *Auth0UserRepository* --> *CustomUserRepository*, as this is now handled in our library's `Auth0PatternServiceProvider.php` file.
 
 * `composer.json` - preferably remove the `auth0/login` from the "require" section (since it's included in our library).
