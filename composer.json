@@ -21,18 +21,21 @@
     "require": {
         "php": "^7.2",
         "illuminate/support": "^8.0",
+        "laravel/framework": "^8.0",
         "auth0/login": "^6.0",
         "owen-it/laravel-auditing": "^10.0 || ^11.0 || ^12.0"
     },
     "autoload": {
         "psr-4": {
-            "FaithFM\\Auth0Pattern\\": "src/"
+            "FaithFM\\Auth0Pattern\\": "src/",
+            "FaithFM\\Auth0Pattern\\Http\\Middleware\\": "src/Session/Middleware/"
         }
     },
     "extra": {
         "laravel": {
             "providers": [
-                "FaithFM\\Auth0Pattern\\Auth0PatternServiceProvider"
+                "FaithFM\\Auth0Pattern\\Auth0PatternServiceProvider",
+                "FaithFM\\Auth0Pattern\\SessionServiceProvider"
             ]
         }
     }

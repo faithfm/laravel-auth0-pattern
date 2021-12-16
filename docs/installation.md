@@ -56,6 +56,20 @@ AUTH0_CLIENT_ID=XXXXXXXXXXXXXXXX
 AUTH0_CLIENT_SECRET=XXXXXXXXXXXX
 ```
 
+#### 3. `App/Http/Kernel.php` file:
+
+Replace Laravel's default *StartSession* middleware with our own:
+
+```php
+        'web' => [
+            ...
+            // \Illuminate\Session\Middleware\StartSession::class,      // replace with...
+            \FaithFM\Auth0Pattern\Http\Middleware\StartSession::class,  // ...the class from Auth0Pattern - which doesn't create hundreds of session files when request contains 'api_token=XXXX'
+            ...
+        ],
+
+```
+
 
 ## UPDATING THE PACKAGE
 
@@ -64,3 +78,16 @@ composer update faithfm/laravel-auth0-pattern
 php artisan vendor:publish --tag=auth-every-update-force-clones --force
 ```
 
+Note: when upgrading from a lower version to **v1.0.8** (or higher):
+
+* You will need to edit `App/Http/Kernel.php` (as per Installation Step #3 see above)
+
+* If you previously used your own special SessionServiceProvider, you'll need to:
+
+  * Delete files: `app/Http/Middleware/StartSession.php` and `app/Providers/SessionServiceProvider.php`
+
+  * Edit file `config/app.php` and remove the following provider:
+
+```php
+        App\Providers\SessionServiceProvider::class,
+```

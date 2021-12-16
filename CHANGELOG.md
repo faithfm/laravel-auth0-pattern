@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 No unreleased changes
 
+## 1.0.8 - 2021-12-16
+
+> WARNING: manual changes are required during this upgrade - see UPDATING THE PACKAGE section in [installation.md](installation.md) for more details.
+
+### Added
+
+* Bring session-file-prevention api_token=XXXX codebase into pattern library:
+
+* Bug-fix: prevent creating a session for every token-based API call (ie: 'api_key=XXXX').
+
+* Note when code was originally written for our Media project, our /api/publicusers API was creating a few session-files every minute and was filling up the server hard disk.  (We found 1.5GB with hundreds of thousands of sessions.)
+
 ## 1.0.7 - 2021-12-16
 
 ### Added
