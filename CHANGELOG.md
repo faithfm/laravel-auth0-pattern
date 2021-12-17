@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 No unreleased changes
 
+## 1.0.9 - 2021-12-17
+
+### Changed
+
+* Update diagrams to reflect v1.07 + v1.08 changes.
+
 ## 1.0.8 - 2021-12-16
 
 > WARNING: manual changes are required during this upgrade - see UPDATING THE PACKAGE section in [installation.md](installation.md) for more details.
