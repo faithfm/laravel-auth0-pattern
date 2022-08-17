@@ -19,7 +19,7 @@
         }
     ],
     "require": {
-        "php": "^7.2",
+        "php": "^7.2|^8.0",
         "illuminate/support": "^8.0",
         "laravel/framework": "^8.0",
         "auth0/login": "^6.0",
