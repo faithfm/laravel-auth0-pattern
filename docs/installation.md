@@ -10,7 +10,7 @@ Add this library to your project's `composer.json` file:
 {
     "require": {
         ...
-        "faithfm/laravel-auth0-pattern": "^1.0"
+        "faithfm/laravel-auth0-pattern": "^2.0"
     }
     ...
 
@@ -44,6 +44,10 @@ Add (replacing credentials with your actual Auth0 details):
 AUTH0_DOMAIN=XXXX.au.auth0.com
 AUTH0_CLIENT_ID=XXXXXXXXXXXXXXXX
 AUTH0_CLIENT_SECRET=XXXXXXXXXXXX
+AUTH0_AUDIENCE=
+AUTH0_REDIRECT_URI=http://XXXX.com/auth0/callback     // where http://XXXX.com should match your 'APP_URL'
+AUTH0_COOKIE_PATH=/
+# AUTH0_COOKIE_PATH is only required due to bug with auth0/auth0-php (v8.3.6) / auth0/login (v7.2.1).  This hadn't been required v8.3.1 and prior.
 ```
 
 #### 2. `.env.example` file:
@@ -54,6 +58,10 @@ Add (generic Auth0 example details):
 AUTH0_DOMAIN=XXXX.au.auth0.com
 AUTH0_CLIENT_ID=XXXXXXXXXXXXXXXX
 AUTH0_CLIENT_SECRET=XXXXXXXXXXXX
+AUTH0_AUDIENCE=
+AUTH0_REDIRECT_URI=http://XXXX.com/auth0/callback     // where http://XXXX.com should match your 'APP_URL'
+AUTH0_COOKIE_PATH=/
+# AUTH0_COOKIE_PATH is only required due to bug with auth0/auth0-php (v8.3.6) / auth0/login (v7.2.1).  This hadn't been required v8.3.1 and prior.
 ```
 
 #### 3. `App/Http/Kernel.php` file:

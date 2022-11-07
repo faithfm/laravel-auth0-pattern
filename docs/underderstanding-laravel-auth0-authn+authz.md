@@ -1,5 +1,9 @@
 # Laravel + Auth0: Authentication + Authorisation
 
+> **WARNING**: auth0/login v7.0 introduced **major architectural changes** which were implemented in v2.0 of this library/pattern.  This architectural documentation has NOT BEEN UPDATED.
+
+
+
 This is our attempt to try to document Laravel + Auth0 Authentication and Authorisation based on our adaptation of Auth0's [Laravel Quickstart](https://auth0.com/docs/quickstart/webapp/laravel) (May 2020 version).
 
 > WARNING: No guarantees are made as to the accuracy of this information.  It was simply our own brain-dump as we tried to decode it all... which then resulted in a number of [diagrams](laravel-auth0-pattern-diagram.pdf) to try to provide a simplified perspective.
@@ -118,7 +122,7 @@ $user = auth('web')->user()        // ditto
 
 $id   = Auth::id();                // currently authenticated user's ID
 ```
-  
+
 Useful Guard methods:   (many defined in Illuminate/Auth/**GuardHelpers**.php Trait - which forms a key part of the SessionGuard and TokenGuard classes)
 
 ```php

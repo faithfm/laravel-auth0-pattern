@@ -6,6 +6,9 @@
  *             See https://github.com/faithfm/laravel-auth0-pattern for more details.
  */
 
+ // Note: auth0/login v7's implementation is now very reliant on the specific naming of guard + driver + provider = 'auth0'.  
+ //    (This can be a little confusing to understand/debug since each performs a different function, yet all three are identically named.)
+
 return [
 
     /*
@@ -20,7 +23,7 @@ return [
     */
 
     'defaults' => [
-        'guard' => 'web',
+        'guard' => 'auth0',
         'passwords' => 'users',
     ],
 
@@ -42,9 +45,9 @@ return [
     */
 
     'guards' => [
-        'web' => [
-            'driver' => 'session',
-            'provider' => 'auth0_users',
+        'auth0' => [
+            'driver' => 'auth0',
+            'provider' => 'auth0',
         ],
 
         'api' => [
@@ -72,9 +75,9 @@ return [
     */
 
     'providers' => [
-        'auth0_users' => [
+        'auth0' => [
             'driver' => 'auth0',
-            'model' => App\Models\User::class,
+            'repository' => FaithFM\Auth0Pattern\Auth0PatternUserRepository::class,
 
         ],
         'eloquent_users' => [

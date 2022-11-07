@@ -4,24 +4,19 @@
 
 An Auth0-based library/pattern for Laravel Authentication and Authorisation:  (developed for Faith FM web projects)
 
-* **AuthN** (Authentication) implemented using **Auth0**
+* **AuthN** (Authentication) implemented using **Auth0** linked to a Eloquent User model...
+  * ...but retaining simple **token-based** AuthN capabilities (ie: '?api_token=XXXX') 
+  * ...and including protection against creating hundreds of session-files.
 * **AuthZ** (Authorization)  with simple **'user-permissions' table** (combined with Laravel/Vue-JS helper Gates & Checks)
+* 
 
 This repo is a PHP Composer package created to improve consistency across our existing Faith FM Laravel+Vue projects.  (Previously we had been trying to maintain multiple copies of these files across multiple projects).
 
 ### Background:
 
-* Our Auth0-based authentication was initially based on Auth0's [Laravel Quickstart](https://auth0.com/docs/quickstart/webapp/laravel) (May 2020 version)... including the [Optional: Custom User Handling" section](https://auth0.com/docs/quickstart/webapp/laravel#optional-custom-user-handling).
-
-* ...but the tutorial had errors - see https://github.com/auth0/docs/issues/9002
-
-* ...and even once the errors were corrected, it returned an Auth0User interface (with a copy of the static "getAttributes()" properties from the User model.  (No access to User methods, etc)
-* Apart from completely changing the way that User data can be accessed for the currently-authenticated user, the Auth0User class is not compatible with other standard features including Laravel's guards implementation.
-* Note: Auth0 are currently looking to rectify this by switching their implementation to use an "Auth0 Trait" (to extend the normal User model instead).  (See https://github.com/auth0/laravel-auth0/pull/165)
-* However until this becomes generally available, I've adapted @aaronflorey's code to create our own Auth0PatternUserModelTrait which we add to the User model.   (See https://gist.github.com/aaronflorey/d20f27a2b0475d238e10b46de3bc3eb4)
-
-
-
+* The need for our own library/pattern initially arose from the complexity required to use Auth0 in a Laravel app, since the [auth0/login](https://github.com/auth0/laravel-auth0) library (pre-v7.0) did not provide an easy way for auth()->user() to return a genuine User model... and this tends to break compatibility with much of the Laravel ecosystem including Laravel Nova.
+* Much of this complexity was resolved in v7.0 of [auth0/login](https://github.com/auth0/laravel-auth0) (v2.0 of our library/pattern), but the Auth0-to-Model connection still requires implementation in a [User Repository](src/Auth0PatternUserRepository.php).
+* ...and the need for a consist approach across our projects still remains.
 
 ## Installation
 
@@ -134,11 +129,13 @@ The remaining fields (ie: *fields* and *filter* in this example) are directly co
 
 ## Architecture
 
+> **WARNING**: auth0/login v7.0 introduced **major architectural changes** which were implemented in v2.0 of this library/pattern.  This architectural documentation has NOT BEEN UPDATED.
+
 Compared to other Auth0 PHP code we've seen, Auth0's Laravel library + quickstart introduces an extremely complex (yet flexible) architecture we found very difficult to understand + debug.  We ended up producing a whole set of [documentation](docs/underderstanding-laravel-auth0-authn+authz.md) + [diagrams](docs/laravel-auth0-pattern-diagram.pdf) to help us get our heads around this.  
 
 Hopefully this can be helpful to someone else - whether you're using our library... or simply if you're trying to understand the code from the [Auth0 Laravel Quickstart](https://auth0.com/docs/quickstart/webapp/laravel).
 
-> WARNING: No guarantees are made as to the accuracy of this information.  It was simply our own brain-dump as we tried to decode it all... which then resulted in a number of [diagrams](laravel-auth0-pattern.pdf) to try to provide a simplified perspective.
+> WARNING: No guarantees are made as to the accuracy of this information.  It was simply our own brain-dump as we tried to decode it all... which then resulted in a number of [diagrams](docs/laravel-auth0-pattern-diagram.pdf) to try to provide a simplified perspective.
 
 > NOTE: the diagrams are the most up-to-date resource.  We didn't try to go back and align our other documentation 
  after producing them... OR after RENAMING a few things in the library.
@@ -147,6 +144,8 @@ Hopefully this can be helpful to someone else - whether you're using our library
 
 
 ## Future Development
+
+> **NOTE**: the remarks in this section may no longer be relevant, since auth0/login v7.0 may have fixed them.  (NOT CHECKED YET)
 
 * During initial development we regularly experienced issues with "Invalid State" errors.  (See our Auth0 Community [support request](https://community.auth0.com/t/handling-laravel-callback-exceptions-invalid-state-and-cant-initialize-a-new-session-while-there-is-one-activ/45103)).  While developing this documentation we discovered that the endless loop for the error *“Can’t initialize a new session while there is one active session already”* can be fixed by the following code - which we executed in a debug session... but haven't yet incorporated into our codebase.
 
