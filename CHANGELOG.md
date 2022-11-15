@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 No unreleased changes
 
+## 2.0.1 - 2022-11-15
+
+### Changed config/auth.php - Add duplicate 'web' guard to avoid errors when accessing API routes.
+
+* Major update: PHP 8 / Laravel 9 / auth0/login 7.
+
+## 2.0.0 - 2022-11-08
+
+### Changed
+
+* Major update: PHP 8 / Laravel 9 / auth0/login 7.
+
 ## 1.0.9 - 2021-12-17
 
 ### Changed
