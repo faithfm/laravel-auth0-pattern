@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 No unreleased changes
 
+## 2.1.0 - 2023-04-20
+
+### Update to make compatible when using Laravel 10
+
+* Update clone/config/auth.php after bugfix in auth0/login library (v7.5)
+
+* Add our version of clone/config/auth0.php
+
+* Update composer file
+
+> Note: Be sure to [publish the force clones](docs/installation.md#updating-the-package) when upgrading to this version.
+
 ## 2.0.1 - 2022-11-15
 
 ### Changed config/auth.php - Add duplicate 'web' guard to avoid errors when accessing API routes.

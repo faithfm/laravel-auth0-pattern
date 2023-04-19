@@ -20,9 +20,9 @@
     ],
     "require": {
         "php": "^8.0",
-        "illuminate/support": "^9.0",
-        "laravel/framework": "^9.0",
-        "auth0/login": "^7.2",
+        "illuminate/support": "^9.0|^10.0",
+        "laravel/framework": "^9.0|^10.0",
+        "auth0/login": "^7.6",
         "owen-it/laravel-auditing": ">=12.0",
         "guzzlehttp/guzzle": ">7.0"
     },
@@ -38,6 +38,11 @@
                 "FaithFM\\Auth0Pattern\\Auth0PatternServiceProvider",
                 "FaithFM\\Auth0Pattern\\SessionServiceProvider"
             ]
+        }
+    },
+    "config": {
+        "allow-plugins": {
+            "php-http/discovery": true
         }
     }
 }
