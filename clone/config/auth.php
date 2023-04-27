@@ -20,7 +20,7 @@ return [
     */
 
     'defaults' => [
-        'guard' => 'web',
+        'guard' => 'web_guard',
         'passwords' => 'users',
     ],
 
@@ -42,12 +42,12 @@ return [
     */
 
     'guards' => [
-        'web' => [
+        'web_guard' => [
             'driver' => 'auth0.guard',
             'provider' => 'ffm_auth0_provider',
         ],
 
-        'api' => [
+        'api_guard' => [
             'driver' => 'token',
             'provider' => 'eloquent_users',
             'hash' => false,

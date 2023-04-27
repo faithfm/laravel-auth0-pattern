@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 No unreleased changes
 
+## 2.2.0 - 2023-04-28
+
+* Create+register+use middleware: 'auth.patched:XXX,YYY' / PatchedAuthenticationMiddleware.php
+
+* Rename for greater clarity:  (and to make it easier to find code when troubleshooting)
+  * Middleware groups: 'web' --> 'web_group' and 'api' --> 'api_group'
+  * Authentication guards: 'web' --> 'web_guard' and 'api' --> 'api_guard'
+
+Note: 'web_group' renaming will also be required in faithfm/laravel-auth0-pattern / auth0pattern-web.php
+
+* Update our version of clone/config/auth0.php
+* Update docs
 ## 2.1.0 - 2023-04-20
 
 ### Update to make compatible when using Laravel 10
@@ -21,7 +33,7 @@ No unreleased changes
 
 ## 2.0.1 - 2022-11-15
 
-### Changed config/auth.php - Add duplicate 'web' guard to avoid errors when accessing API routes.
+### Changed config/auth.php - Add duplicate 'web' guard to avoid errors when accessing API routes
 
 * Major update: PHP 8 / Laravel 9 / auth0/login 7.
 
@@ -62,7 +74,6 @@ No unreleased changes
 * installation.md - updated
 
 * CHANGELOG.md - had not been updated since project created - brought it up-to-date
-
 
 ## 1.0.6 - 2021-11-15
 

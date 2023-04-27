@@ -5,14 +5,14 @@
 An Auth0-based library/pattern for Laravel Authentication and Authorisation:  (developed for Faith FM web projects)
 
 * **AuthN** (Authentication) implemented using **Auth0** linked to a Eloquent User model...
-  * ...but retaining simple **token-based** AuthN capabilities (ie: '?api_token=XXXX') 
+  * ...but retaining simple **token-based** AuthN capabilities (ie: '?api_token=XXXX')
   * ...and including protection against creating hundreds of session-files.
 * **AuthZ** (Authorization)  with simple **'user-permissions' table** (combined with Laravel/Vue-JS helper Gates & Checks)
-* 
+*
 
 This repo is a PHP Composer package created to improve consistency across our existing Faith FM Laravel+Vue projects.  (Previously we had been trying to maintain multiple copies of these files across multiple projects).
 
-### Background:
+## Background
 
 * The need for our own library/pattern initially arose from the complexity required to use Auth0 in a Laravel app, since the [auth0/login](https://github.com/auth0/laravel-auth0) library (pre-v7.0) did not provide an easy way for auth()->user() to return a genuine User model... and this tends to break compatibility with much of the Laravel ecosystem including Laravel Nova.
 * Much of this complexity was resolved in v7.0 of [auth0/login](https://github.com/auth0/laravel-auth0) (v2.0 of our library/pattern), but the Auth0-to-Model connection still requires implementation in a [User Repository](src/Auth0PatternUserRepository.php).
@@ -47,6 +47,12 @@ Gate::allows('use-app');            // simple test  (???untested)
 Gate::authorize('use-app');         // route definitions
 $this->middleware('can:use-app');   // controller constructors
 @can('use-app')                     // blade templates
+```
+
+To use multiple guards the middleware name syntax is:
+
+```php
+$this->middleware('auth.patched:api_guard,web_guard'); //controller constructors using api and web guards
 ```
 
 More complex restrictions-field checking/filtering has currently only been implemented in the front-end (see next section)... but in the mean-time you could probably use something like this:   (UNTESTED)
@@ -97,6 +103,7 @@ In the '*restrictions*' field example from our Media project above, the *restric
 ```
 
 The value of the *status* field will be:
+
 * `NOT PERMITTED` - if the requested permission (ie: "use-app") does not exist for the user.
 * `ALL PERMITTED` - if the requested permission does exist... AND the *'restrictions'* field is blank.
 * `SOME PERMITTED` - if the requested permission does exist... AND the *'restrictions'* field contains valid JSON data.
@@ -105,7 +112,7 @@ The remaining fields (ie: *fields* and *filter* in this example) are directly co
 
 > REMINDER: according to good security practice you should not rely only upon front-end checks to enforce security, but should perform security checks in the back-end too.
 
-## Sample code to pass permissions via LaravelAppGlobals to front-end:
+## Sample code to pass permissions via LaravelAppGlobals to front-end
 
 ```php
   $LaravelAppGlobals = [
@@ -127,6 +134,59 @@ The remaining fields (ie: *fields* and *filter* in this example) are directly co
 ...
 ```
 
+## Usage in different packages that require auth
+  
+* To allow the audit package to use the new guards you should replace in `config/audit.php`. Replace the guards use by the user
+
+```diff
+    'user' => [
+        'morph_prefix' => 'user',
+        'guards' => [
+-           'web',
+-           'api',
++           'web_guard',
++           'api_guard',
+        ],
+    ],
+```
+
+* Change `config/larecipe.php`
+
+```diff
+//Documentation Routes
+
+'docs' => [
+        'route' => '/docs',
+        'path' => '/resources/docs',
+        'landing' => 'sched-editor-colour-schemes',
+-       'middleware' => ['web'],
++       'middleware' => ['web_group'],
+    ],
+```
+
+* Change `config/nova.php`
+
+```diff
++use Auth0\Laravel\Http\Middleware\Stateful\Authenticate;
+-//use Laravel\Nova\Http\Middleware\Authenticate;
+... 
+//Nova Route Middleware
+'middleware' => [
+-       'web',
++       'web_group',
+        HandleInertiaRequests::class,
+        DispatchServingNovaEvent::class,
+        BootTools::class,
+    ],
+
+    'api_middleware' => [
+        'nova',
+-       Authenticate::class,
++       PatchedAuthenticationMiddleware::class,
+        Authorize::class,
+    ],
+```
+
 ## Architecture
 
 > **WARNING**: auth0/login v7.0 introduced **major architectural changes** which were implemented in v2.0 of this library/pattern.  This architectural documentation has NOT BEEN UPDATED.
@@ -137,11 +197,10 @@ Hopefully this can be helpful to someone else - whether you're using our library
 
 > WARNING: No guarantees are made as to the accuracy of this information.  It was simply our own brain-dump as we tried to decode it all... which then resulted in a number of [diagrams](docs/laravel-auth0-pattern-diagram.pdf) to try to provide a simplified perspective.
 
-> NOTE: the diagrams are the most up-to-date resource.  We didn't try to go back and align our other documentation 
+> NOTE: the diagrams are the most up-to-date resource.  We didn't try to go back and align our other documentation
  after producing them... OR after RENAMING a few things in the library.
 
 ![laravel-auth0-pattern-s2-stucture](doc/../docs/images_diagram/laravel-auth0-pattern-s2-stucture.jpg)
-
 
 ## Future Development
 
@@ -153,7 +212,7 @@ Hopefully this can be helpful to someone else - whether you're using our library
     session()->forget('auth0\_\_user')
 ```
 
-* In the future, it is anticipated that some variations may be required between projects.  At this time the simplistic cloned/force-publish deploy method for Models will need to be replaced by a more sophisticated approach - ie: using Laravel Traits / parent Classes, etc. 
+* In the future, it is anticipated that some variations may be required between projects.  At this time the simplistic cloned/force-publish deploy method for Models will need to be replaced by a more sophisticated approach - ie: using Laravel Traits / parent Classes, etc.
 
 * Auth0's code is not retrieving the 'user_metadata' data during code-exchange.  We have unsuccessfully tried a few things, but moved on to other priorities.  Notes from initial research saved under [documentation / future research](docs/underderstanding-laravel-auth0-authn+authz.md#future-research).
 
@@ -164,4 +223,3 @@ Hopefully this can be helpful to someone else - whether you're using our library
 * Assumes that Laravel Auditing ([owen-it/laravel-auditing](https://github.com/owen-it/laravel-auditing) package) is applied for all models.
 
 * Files to be cloned/force-published are found in the "clone" folder - with a structure matching target folders of the target project.
-

@@ -34,9 +34,9 @@ php artisan migrate       # 'user_permissions' table skipped if already exists
 npm run prod              # or 'npm run watch'
 ```
 
-### Manual Changes:
+### Manual Changes
 
-#### 1. `.env` file:
+#### 1. `.env` file
 
 Add (replacing credentials with your actual Auth0 details):
 
@@ -50,7 +50,7 @@ AUTH0_COOKIE_PATH=/
 # AUTH0_COOKIE_PATH is only required due to bug with auth0/auth0-php (v8.3.6) / auth0/login (v7.2.1).  This hadn't been required v8.3.1 and prior.
 ```
 
-#### 2. `.env.example` file:
+#### 2. `.env.example` file
 
 Add (generic Auth0 example details):
 
@@ -64,7 +64,7 @@ AUTH0_COOKIE_PATH=/
 # AUTH0_COOKIE_PATH is only required due to bug with auth0/auth0-php (v8.3.6) / auth0/login (v7.2.1).  This hadn't been required v8.3.1 and prior.
 ```
 
-#### 3. `App/Http/Kernel.php` file:
+#### 3. `App/Http/Kernel.php` file
 
 Replace Laravel's default *StartSession* middleware with our own:
 
@@ -77,7 +77,6 @@ Replace Laravel's default *StartSession* middleware with our own:
         ],
 
 ```
-
 
 ## UPDATING THE PACKAGE
 
@@ -98,4 +97,39 @@ Note: when upgrading from a lower version to **v1.0.8** (or higher):
 
 ```php
         App\Providers\SessionServiceProvider::class,
+```
+
+* Rename middleware groups in `app/Http/Kernel.php` to match guard name created in our project
+  
+```diff
+    protected $middlewareGroups = [
+-       'web' => [
++       'web_group' => [
+            ...
+        ]
+-       'api' => [
++       'api_group' => [
+            ...
+        ]
+```
+
+Note: when upgrading from a lower version to **v2.2.0** (or higher):
+
+* Rename middleware in `app/Providers/RouteServiceProvider.php`
+
+```diff
+    protected function mapWebRoutes(): void
+    {
+-       Route::middleware('web')
++       Route::middleware('web_group')
+            ->group(base_path('routes/web.php'));
+    }
+    ...
+    protected function mapApiRoutes(): void
+    {
+        Route::prefix('api')
+-           ->middleware(['web', 'api'])         // add non-standard 'web' middleware option for API routes too - to allow authentication using session cookies instead of api_token etc
++           ->middleware(['web_group', 'api_group'])         // add non-standard 'web' middleware option for API routes too - to allow authentication using session cookies instead of api_token etc
+            ->group(base_path('routes/api.php'));
+    }    
 ```
