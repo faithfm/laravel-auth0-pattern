@@ -162,6 +162,16 @@ The remaining fields (ie: *fields* and *filter* in this example) are directly co
 -       'middleware' => ['web'],
 +       'middleware' => ['web_group'],
     ],
+   ...
+   'settings' => [
+        'auth' => false,
+        'guard' => null,
+        'ga_id' => '',
+        'middleware' => [
+-           'web',
++           'web_group',
+        ],
+
 ```
 
 * Change `config/nova.php`
