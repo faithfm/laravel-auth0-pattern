@@ -36,47 +36,95 @@ npm run prod              # or 'npm run watch'
 
 ### Manual Changes
 
-#### 1. `.env` file
+1. Create app in Auth0 interface to get credential used in next step
 
-Add (replacing credentials with your actual Auth0 details):
+2. `.env` file
 
-```env
-AUTH0_DOMAIN=XXXX.au.auth0.com
-AUTH0_CLIENT_ID=XXXXXXXXXXXXXXXX
-AUTH0_CLIENT_SECRET=XXXXXXXXXXXX
-AUTH0_AUDIENCE=
-AUTH0_REDIRECT_URI=http://XXXX.com/auth0/callback     // where http://XXXX.com should match your 'APP_URL'
-AUTH0_COOKIE_PATH=/
-# AUTH0_COOKIE_PATH is only required due to bug with auth0/auth0-php (v8.3.6) / auth0/login (v7.2.1).  This hadn't been required v8.3.1 and prior.
-```
+   Add (replacing credentials with your actual Auth0 details):
 
-#### 2. `.env.example` file
+   ```env
+   AUTH0_DOMAIN=XXXX.au.auth0.com
+   AUTH0_CLIENT_ID=XXXXXXXXXXXXXXXX
+   AUTH0_CLIENT_SECRET=XXXXXXXXXXXX
+   AUTH0_AUDIENCE=
+   AUTH0_REDIRECT_URI=http://XXXX.com/auth0/callback     // where http://XXXX.com should match your 'APP_URL'
+   AUTH0_SCOPE="openid profile email offline_access"
+   AUTH0_COOKIE_PATH=/
+   # AUTH0_COOKIE_PATH is only required due to bug with auth0/auth0-php (v8.3.6) / auth0/login (v7.2.1).  This hadn't been required v8.3.1 and prior.
+   ```
 
-Add (generic Auth0 example details):
+3. `.env.example` file
 
-```env
-AUTH0_DOMAIN=XXXX.au.auth0.com
-AUTH0_CLIENT_ID=XXXXXXXXXXXXXXXX
-AUTH0_CLIENT_SECRET=XXXXXXXXXXXX
-AUTH0_AUDIENCE=
-AUTH0_REDIRECT_URI=http://XXXX.com/auth0/callback     // where http://XXXX.com should match your 'APP_URL'
-AUTH0_COOKIE_PATH=/
-# AUTH0_COOKIE_PATH is only required due to bug with auth0/auth0-php (v8.3.6) / auth0/login (v7.2.1).  This hadn't been required v8.3.1 and prior.
-```
+   Add (generic Auth0 example details):
 
-#### 3. `App/Http/Kernel.php` file
+   ```env
+   AUTH0_DOMAIN=XXXX.au.auth0.com
+   AUTH0_CLIENT_ID=XXXXXXXXXXXXXXXX
+   AUTH0_CLIENT_SECRET=XXXXXXXXXXXX
+   AUTH0_AUDIENCE=
+   AUTH0_REDIRECT_URI=http://XXXX.com/auth0/callback     // where http://XXXX.com should match your 'APP_URL'
+   AUTH0_SCOPE="openid profile email offline_access"
+   AUTH0_COOKIE_PATH=/
+   # AUTH0_COOKIE_PATH is only required due to bug with auth0/auth0-php (v8.3.6) / auth0/login (v7.2.1).  This hadn't been required v8.3.1 and prior.
+   ```
 
-Replace Laravel's default *StartSession* middleware with our own:
+4. `App/Http/Kernel.php` file
 
-```php
-        'web' => [
-            ...
-            // \Illuminate\Session\Middleware\StartSession::class,      // replace with...
-            \FaithFM\Auth0Pattern\Http\Middleware\StartSession::class,  // ...the class from Auth0Pattern - which doesn't create hundreds of session files when request contains 'api_token=XXXX'
-            ...
-        ],
+   Replace Laravel's default *StartSession* middleware with our own:
 
-```
+   ```php
+           'web' => [
+               ...
+               // \Illuminate\Session\Middleware\StartSession::class,      // replace with...
+               \FaithFM\Auth0Pattern\Http\Middleware\StartSession::class,  // ...the class from Auth0Pattern - which doesn't create hundreds of session files when request contains 'api_token=XXXX'
+               ...
+           ],
+   
+   ```
+
+   * Rename middleware groups in `app/Http/Kernel.php` to match guard name created in our project
+
+   ```diff
+       protected $middlewareGroups = [
+   -       'web' => [
+   +       'web_group' => [
+               ...
+           ]
+   -       'api' => [
+   +       'api_group' => [
+               ...
+           ]
+   ```
+
+5. Rename middleware in `app/Providers/RouteServiceProvider.php`
+
+   (Note: Sometimes the order of functions has been swapped, just make sure to change the `middleware` function)
+
+   ```diff
+       protected function mapWebRoutes(): void
+       {
+   -       Route::middleware('web')
+   +       Route::middleware('web_group')
+               ->group(base_path('routes/web.php'));
+       }
+       ...
+       protected function mapApiRoutes(): void
+       {
+           Route::prefix('api')
+   -           ->middleware(['web', 'api'])         // add non-standard 'web' middleware option for API routes too - to allow authentication using session cookies instead of api_token etc
+   +           ->middleware(['web_group', 'api_group'])         // add non-standard 'web' middleware option for API routes too - to allow authentication using session cookies instead of api_token etc
+               ->group(base_path('routes/api.php'));
+       }    
+   ```
+
+6. Change ocurrence when middleware **auth** is used. Ie:
+
+   ```diff
+   - ...->middleware(['auth']);
+   + ...->middleware('auth.patched:api_guard,web_guard'); //controller constructors using api and web guards
+   ```
+
+   
 
 ## UPDATING THE PACKAGE
 
@@ -87,7 +135,7 @@ php artisan vendor:publish --tag=auth-every-update-force-clones --force
 
 Note: when upgrading from a lower version to **v1.0.8** (or higher):
 
-* You will need to edit `App/Http/Kernel.php` (as per Installation Step #3 see above)
+* You will need to edit `App/Http/Kernel.php` (as per Installation Step #4 see above)
 
 * If you previously used your own special SessionServiceProvider, you'll need to:
 
@@ -99,37 +147,7 @@ Note: when upgrading from a lower version to **v1.0.8** (or higher):
         App\Providers\SessionServiceProvider::class,
 ```
 
-* Rename middleware groups in `app/Http/Kernel.php` to match guard name created in our project
-  
-```diff
-    protected $middlewareGroups = [
--       'web' => [
-+       'web_group' => [
-            ...
-        ]
--       'api' => [
-+       'api_group' => [
-            ...
-        ]
-```
-
 Note: when upgrading from a lower version to **v2.2.0** (or higher):
 
-* Rename middleware in `app/Providers/RouteServiceProvider.php`
-
-```diff
-    protected function mapWebRoutes(): void
-    {
--       Route::middleware('web')
-+       Route::middleware('web_group')
-            ->group(base_path('routes/web.php'));
-    }
-    ...
-    protected function mapApiRoutes(): void
-    {
-        Route::prefix('api')
--           ->middleware(['web', 'api'])         // add non-standard 'web' middleware option for API routes too - to allow authentication using session cookies instead of api_token etc
-+           ->middleware(['web_group', 'api_group'])         // add non-standard 'web' middleware option for API routes too - to allow authentication using session cookies instead of api_token etc
-            ->group(base_path('routes/api.php'));
-    }    
-```
+* You will need to rename middleware in `app/Providers/RouteServiceProvider.php` (as per Installation Step #5 see above)
+* Also is neccesary to change ocurrence when middleware **auth** is used (as per Installation Step #6 see above)

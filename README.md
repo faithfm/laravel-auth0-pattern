@@ -177,7 +177,7 @@ The remaining fields (ie: *fields* and *filter* in this example) are directly co
 * Change `config/nova.php`
 
 ```diff
-+use Auth0\Laravel\Http\Middleware\Stateful\Authenticate;
++use FaithFM\Auth0Pattern\Http\Middleware\PatchedAuthenticationMiddleware;
 -//use Laravel\Nova\Http\Middleware\Authenticate;
 ... 
 //Nova Route Middleware

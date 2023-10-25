@@ -13,16 +13,24 @@ class EditUsersTable extends Migration
      */
     public function up()
     {
+        // Add 'sub' column if it doesn't exist
         if (!Schema::hasColumn('users', 'sub')) {
             Schema::table('users', function (Blueprint $table) {
                 $table->string('sub')->after('id')
                     ->unique()
                     ->nullable()
                     ->default(null);
+            });
+        }
+
+        // Remove unique constraint from 'email' column if it exists
+        if (Schema::hasColumn('users', 'email') && Schema::getConnection()->getDoctrineColumn('users', 'email')->getUnique()) {
+            Schema::table('users', function (Blueprint $table) {
                 $table->dropUnique('email');
             });
         }
 
+        // Add 'api_token' column if it doesn't exist
         if (!Schema::hasColumn('users', 'api_token')) {
             Schema::table('users', function (Blueprint $table) {
                 $table->string('api_token', 80)->after('email')
@@ -32,12 +40,14 @@ class EditUsersTable extends Migration
             });
         }
 
+        // Drop 'email_verified_at' column if it exists
         if (Schema::hasColumn('users', 'email_verified_at')) {
             Schema::table('users', function (Blueprint $table) {
                 $table->dropColumn('email_verified_at');
             });
         }
 
+        // Drop 'password' column if it exists
         if (Schema::hasColumn('users', 'password')) {
             Schema::table('users', function (Blueprint $table) {
                 $table->dropColumn('password');
