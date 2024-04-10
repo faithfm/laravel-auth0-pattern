@@ -7,6 +7,24 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 No unreleased changes
 
+# 3.0.0 - 2024-04-18
+
+* Major revision of our pattern as we update the auth0/login package from v7.6.0 to v7.12.0  (v7.8.0 was where their major update occurred).
+* Update config/auth.php and config/auth0.php to work with new Laravel and Auth0 template settings
+* Rename Authentication guards for greater clarity:
+  * 'web' (Laravel default) --> 'web_guard' (pre v3.0.0) -> 'ffm-session-guard' (post v3.00)
+  * 'api' (Laravel default) --> 'api_guard' (pre v3.0.0) -> 'ffm-token-guard' (post v3.00)
+* Move AuthZ "defined permissions" from AuthPermissionList.php to config/auth.php
+* Gate logic now defines a single 'after' gate and enables multiple permissions to be checked ie: Gate::allows('view-catalog|edit-catalog')
+* Disable most automatic registration settings in config/auth0.php (not compatible with our pattern)
+* Add 'ffmRegisterAuthenticationRoutes' setting to config/auth.php to replace 'registerAuthenticationRoutes'.  Increases visibility, provides better control/debugging, and matches Auth0's new config style.
+* Update User.php model template to match Auth0 SDK structural changes.
+* Update Auth0PatternUserRepository.php to match Auth0 SDK structural changes.
+* Merge 'clones/' published folder with 'templates/' folder for simplicity.
+* Remove PatchedAuthenticationMiddleware ('auth.patched' middleware) - no longer required due to upstream fixes in Auth0 SDK.
+* Implement (temporary hack) PatchedAuthenticationGuard to address Auth0 SDK (v7.8.0) bug. (Ie: InvalidTokenException caused by a blank AUTH0_AUDIENCE / 'opaque' JWT tokens).  See our github issue: https://github.com/auth0/laravel-auth0/issues/454
+* Implement our own version of the LoginController to capture 'previous' URL and save it as 'intended' session variable to enable redirect in '/callback' route after login
+
 ## 2.2.0 - 2023-04-28
 
 * Create+register+use middleware: 'auth.patched:XXX,YYY' / PatchedAuthenticationMiddleware.php
