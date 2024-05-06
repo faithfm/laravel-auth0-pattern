@@ -17,7 +17,13 @@ use Illuminate\Foundation\Auth\Access\Authorizable;
 use Illuminate\Notifications\Notifiable;
 use OwenIt\Auditing\Contracts\Auditable;
 
-// Model signature is based on the Auth0 example: https://github.com/auth0/laravel-auth0/blob/main/docs/Eloquent.md#creating-a-user-model
+// Model signature is based on a combination of:
+//  * Laravel (v10) default User model
+//  * A non-password-based version of it's parent (Illuminate\Foundation\Auth\User)
+//  * Our own Auth0 pattern and the documentation in its child packages: 
+//    * laravel-simple-auth0
+//    * laravel-simple-auth-tokens
+//    * laravel-simple-permissions
 
 class User extends Model implements AuthenticatableContract, AuthorizableContract, Auditable
 {
@@ -27,10 +33,13 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     /**
      * The attributes that are mass assignable.
      *
-     * @var array
+     * @var array<int, string>
      */
     protected $fillable = [
-        'name', 'email', 'sub',
+        'name',
+        'email',
+        'sub',
+        'api_token',
     ];
 
     /**
@@ -39,7 +48,7 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
      * @var array
      */
     protected $hidden = [
-        'password', 'remember_token',
+        'remember_token',
     ];
 
     /**
@@ -48,11 +57,11 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
      * @var array
      */
     protected $casts = [
-        'email_verified_at' => 'datetime',
     ];
 
     /**
      * Get the permissions for the user.
+     * See: faithfm/laravel-simple-permissions package
      */
     public function permissions()
     {

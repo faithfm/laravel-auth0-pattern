@@ -2,107 +2,151 @@
 
 ![laravel-auth0-pattern-logo.jpg](doc/../docs/laravel-auth0-pattern-logo.jpg)
 
-An Auth0-based library/pattern for Laravel Authentication and Authorisation.  (Implemented as a PHP Composer (VCS/github) package to improve consistency across our Faith FM Laravel+Vue projects)
+An opinionated library/pattern for Laravel Authentication (AuthN) and Authorisation (AuthZ) - designed to improve consistency across our Faith FM Laravel/Vue projects.
 
-* **Session**-based **AuthN** (Authentication) is implemented using an **Auth0** backend (combined with our own User model)
-  * Unlike a default Laravel application, this guard is made available for both web and API routes, since our applications do not implement stateless/headless font-ends, thus session-based state is available even for AJAX API calls from our javascript/Vue front ends.
+Much of the functionality of our pattern is now contained in **3x reusable packages** that will be of more widespread interest to other developers:
 
-* Simple **token**-based **AuthN** (Authentication) is also available (ie: `?api_token=XXXX`).  This is not related to Auth0.
+* [laravel-**simple-auth0**](https://github.com/faithfm/laravel-simple-auth0) - simple **session**-based Authentication using **Auth0**.
+  
+* [laravel-**simple-auth-tokens**](https://github.com/faithfm/laravel-simple-auth-tokens) - simple **token**-based Authentication using **API keys** (ie: `?api_token=XXXX`).  
+* [laravel-**simple-permissions**](https://github.com/faithfm/laravel-simple-permissions) - simple **Permissions** / Authorization Gates using the *'user_permissions'* table / Eloquent model.
 
-  * Protection is included to prevent creation of hundreds of session-files when using token-based authentication.
-* **AuthZ** (Authorization)  with a simple **'user-permissions' table** is provided (includes Laravel/Vue-JS helper Gates & Checks)
-
-## Background
-
-* The need for our own library/pattern initially arose from the complexity required to use Auth0 in a Laravel app, since the [auth0/login](https://github.com/auth0/laravel-auth0) library (pre-v7.0) did not provide an easy way for auth()->user() to return a genuine User model... and this tends to break compatibility with much of the Laravel ecosystem including Laravel Nova.
-* Much of this complexity was resolved in v7.0 of [auth0/login](https://github.com/auth0/laravel-auth0) (v2.0 of our library/pattern), but the Auth0-to-Model connection still requires implementation in a [User Repository](src/Auth0PatternUserRepository.php).
-* Major improvements were introduced in 7.8 of [auth0/login](https://github.com/auth0/laravel-auth0) (v3.0 of our library/pattern).  Some things were simplified while others were complicated by automatic registration functionality that included hard-coded aspects not aligning to our pattern.
-* ...and **the need for a consist approach across our projects still remains**.
-
-## Structure of this Library / Pattern:
-
-* Uses capabilities from the `auth0/login` (Auth0 Laravel SDK) composer package:
-  * ie: Auth0's authentication (AuthN) drivers are used, but NOT Auth0's authorization (AuthZ) drivers, etc
-
-* Publishes the following templates:
-  * `config/auth0.php` - intended for use without adjustment
-  * ``config/auth.php`  - intended for use without adjustment... **except** for the `'defined_permissions'` setting which is **always updated** with a specific list of **permissions** for each application
-    * This config defines our main '***ffm-session-guard***' session-based authentication guard
-      * Uses '*auth0.authenticator.patched*'  (a patched version of Auth0's Authentication Guard driver)
-      * Uses '*ffm-auth0-user-provider*' (our custom User Repository)
-    * This config defines our simple token-based '***ffm-token-guard***'  (for API use)
-  * `app/Models/User.php` - **often customised** with extended functionality
-  * `app/Models/UserPermission.php` - intended for use without adjustment
-* Creates [authorization **gates**](https://laravel.com/docs/master/authorization#gates) for all `'defined_permissions'` in `config/auth.php` 
-  * Ie: `middleware('can:use-app')` is successful when a user has been given the '*use-app*' permission in `user_permissions` table
-* Registers the following authentication **routes**: */login, /logout, /callback*
-  * Similiar to automatic route registration in Auth0 SDK, but applies our 'web_group' middleware instead of the default Laravel 'web' middleware hard-coded in to the Auth0 SDK.
-* Registers a patched version of Auth0's Authentication Guard driver
-  * Note: this driver is a temporary bug-fix to overcome a current (v7.12) bug where the Auth0 SDK does not correctly handle the 'accessToken' vs 'idToken' when AUTH0_AUDIENCE is blank
-* Provides the following migrations:
-  * `2021_11_02_231849_edit_users_table.php` 
-    * ADD fields:  *sub*, *api_token* 
-    * DROP fields:  *password*, *email_verified_at* 
-    * DROP unique constraint for field: *email* 
-
-  * `2021_05_31_010233_create_user_permissions_table.php`
-    * CREATE table:  *user_permissions*
-
-> [!NOTE]
->
-> Both models use Laravel Auditing ([owen-it/laravel-auditing](https://github.com/owen-it/laravel-auditing) package) - a package that is used in all our applications.
->
-> Older versions of the Laravel Auth0 SDK were documented thoroughly to enable us to understand the complex structure involved.  This is now totally out-of-date, but can be [viewed here for reference purposes](docs/legacy-notes.md), however no guarantees is made to the accuracy of this information.
+> In v4.0.0 we replaced the official [Auth0 Laravel SDK](https://github.com/auth0/laravel-auth0) with our own lightweight *laravel-simple-auth0* package, and split other functionality into reusable packages.  Our *laravel-simple-auth0* uses Laravel's built-in Session-Guard and an Eloquent User model retrieved using the 'sub' identifier provided by a [simple Auth0 PHP flow](https://auth0.com/docs/quickstart/webapp/php)).[^1]
 
 
 
-## Installation
+## Structure:
 
-See [installation instructions](docs/installation.md).  
+Our pattern:
 
-> Note: This Composer library is installed directly from Github (not currently registered with packagist.org).  
+* Imports the 3x reusable packages.
+* Publishes a number of opinionated templates that are re-used across our applications.
+* Provides configuration and usage instructions and guidance.
 
-## Basic Usage
 
-* Define a simple list of permissions your app will use (in `config/auth.php` templated file).
 
-* Add these permissions for each of your relevant users (in the "user_permissions" table).
+The key files required/provided are:
 
-* The '*restrictions*' column is a JSON field that can **optionally** be used to define specific restrictions/qualifications to a privilege.  Ie: our Media project uses 'filter' and 'fields' to restrict users to editing specific files/fields.
+![structure-of-pattern](docs/structure-of-pattern.jpg)
 
-```JSON
-  { "fields":["content","guests"], "filter":"file:sa/*" }
-```
 
-## Usage - Laravel back-end
 
-In the backend, ensure someone is logged-in (AuthN) in same way you would for any other Laravel app - ie:
+## Installation and Configuration:
+
+* Apply the basic [installation and configuration](docs/installation.md) instructions.
+
+* Configure [external packages](docs/external-package-config.md) such as Laravel Nova and OwenIT Auditing.
+
+* Configure Auth0 *(including allowed callback routes)* and add Auth0 settings to your **.env** file:    
+
+  *(It's wise to update **.env.example** template too.  See [faithfm/**laravel-simple-auth0**](https://github.com/faithfm/laravel-simple-auth0?tab=readme-ov-file#configuration) package for further details regarding Auth0 configuration, etc.)*
+
+  ```php
+  AUTH0_DOMAIN=XXXX.xx.auth0.com
+  AUTH0_CLIENT_ID=XXXXXXXXXXX
+  AUTH0_CLIENT_SECRET=XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+  ```
+
+
+* Define the list of allowable Permissions in config/**auth.php**:
 
 ```php
-...->middleware('auth')
-# Equivalent to:
-...->middleware('auth:ffm-token-guard')   # ie: this is the default authentication guard
+'defined_permissions' => [
+    'use-app',                  // minimum permission to use the app
+    'admin-app',                // master admin privilege
+//  'edit-catalog',             // for catalog editors  (assuming you're writing a catalogue application)
+],
 ```
 
-To use multiple authentication guards the middleware name syntax is:
+* Assign permissions to users via the `user_permissions` table:
+
+  *(The 'restrictions' column is a JSON field that can **optionally** be used to define specific restrictions/qualifications to a privilege.  Ie: our Media project uses 'filter' and 'fields' to restrict users to editing specific files/fields.)*
+
+<img align="left" src="docs/user_permissions-table.jpg" alt="user_permissions-table" />
+
+
+
+## How It Works
+
+* The /login, /logout, /callback routes that enable session-based authentication are documented in [laravel-**simple-auth0**](https://github.com/faithfm/laravel-simple-auth0?tab=readme-ov-file#how-it-works). 
+
+* The `api_key=XXX` token-based authentication is documented in [laravel-**simple-auth-tokens**](https://github.com/faithfm/laravel-simple-auth-tokens?tab=readme-ov-file#how-it-works). 
+* The [Authorization Gates](https://laravel.com/docs/master/authorization) automatically created for all `'defined_permissions'` in config/**auth.php** are documented in [laravel-**simple-permissions**](https://github.com/faithfm/laravel-simple-permissions).
+* Our *User* and *UserPermission* models incorporate the [owen-it/laravel-auditing](https://github.com/owen-it/laravel-auditing) package which is used to audit changes to models across our projects.  *(This package is a composer dependency.)*
+* Our learnings from developing an understanding of authentication + authorization - particularly in the context of Laravel + Auth0 have been [documented here](docs/underderstanding-laravel-auth0-authn+authz.md) for what they're worth.
+
+
+
+## Usage
+
+Our pattern uses non-standard **Authentication Guard** names for [greater clarity and disambiguation](docs/disambiguation-auth-guard-vs-middleware-group-names.md):
+
+* **'web'** (Laravel default) --> **'web_guard'** (v2.2.0) --> **'ffm-session-guard'** (v3.0.0)    [based on SessionGuard driver]
+
+* **'api'** (Laravel default) --> **'api_guard'** (v2.2.0) --> **'ffm-token-guard'** (v3.0.0)    [based on TokenGuard driver]
+
+
+
+**Authentication Examples:**
+
+Apart from that our pattern supports all Laravel's normal [authentication](https://laravel.com/docs/master/authentication) (AuthN) methods to check if logged in, protect routes, retrieve a user, etc:
 
 ```php
-...->middleware('auth:ffm-token-guard,ffm-session-guard')
+// Check a user is logged in - using a variety of methods   (default guard is our session-based Auth0 guard)
+$loggedIn = auth()->check();                         // using helper function  (default guard)
+$loggedIn = Auth::check();                           // using Facades          (default guard)
+$loggedIn = auth('ffm-session-guard')->check();      // session-based guard specified - ie: using Auth0
+$loggedIn = auth('ffm-token-guard')->check();        // token-based guard specified - ie: api_token=XXX
+$loggedIn = Auth::guard('ffm-token-guard')->check(); // token-based guard specified using Facades
+
+// Various useful guard functions - using the helper function and the default guard
+auth()->user()          // Eloquent model for the logged-in User
+auth()->id()            // User ID for this user - ie: user()->getAuthIdentifier()
+auth()->check()         // TRUE  if logged in
+auth()->guest()         // FALSE if logged in
+auth()->authenticate()  // throw AuthenticationException if not logged in  (similiar to middleware checks)
+
+// Protect routes using 'auth' (Authenticate) middleware - throw AuthenticationException if not logged in
+Route::get(...) { ... }
+  ->middleware('auth');                                   // using default guard
+  ->middleware('auth:ffm-token-guard');                   // specifying token-based guard
+  ->middleware('auth:ffm-session-guard,ffm-token-guard'); // allow EITHER session-based OR token-based guards
 ```
 
-Check for **permissions** (AuthZ) in the same way you would any other gate - ie:
-
-Simple permission checks:
+When multiple alternative guards have been specified via middleware (ie: the last example above), all authentication calls inside this route are implicitly resolved using the first authenticated guard that was found:      *(The middleware calls the shouldUse() method which overrides the configured default guard.)*
 
 ```php
-Gate::allows('use-app');            // simple test
-Gate::allows('use-app|edit-posts'); // multiple (ORed) permissions can be checked too
-Gate::authorize('use-app');         // route definitions
-$this->middleware('can:use-app');   // controller constructors
-@can('use-app')                     // blade templates
+Route::get('/showuser', function () {
+    return auth()->user();	// session-based or token-based guard will automatically be used depending on first authenticated guard found during middleware check
+})->middleware('auth:ffm-session-guard,ffm-token-guard');
 ```
 
-More complex restrictions-field checking/filtering has currently only been implemented in the front-end (see next section)... but in the mean-time you could probably use something like this:   (UNTESTED)
+We also have created an extended `auth_guards()` helper that allows **multiple guards** to be specified, since unfortunately neither Laravel's `guard()` helper nor `Auth::guard()` facade support multiple guards **outside** of a middleware-protected-route - ie:
+
+```php
+$user = auth()->user();                 // default guard   = SUPPORTED
+$user = auth('api')->user();            // specific guard  = SUPPORTED
+$user = auth('web,api')->user();        // multiple guards = NOT SUPPORTED
+$user = auth_guards('web,api')->user(); // multiple guards = SUPPORTED (extended helper)
+```
+
+
+
+**Authorization Examples:**
+
+Check for **permissions** (AuthZ) using the [Authorization Gates](https://laravel.com/docs/master/authorization) that have been automatically created for all `'defined_permissions'` in config/**auth.php**:  
+
+```php
+$allowed = Gate::allows('use-app');             // simple test
+$allowed = Gate::allows('use-app|edit-assets'); // ORed permissions (SPECIAL FEATURE)
+...->middleware('can:use-app');                 // protect in route definitions
+Gate::authorize('use-app');                     // protect elsewhere (ie: controllers)
+@can('use-app')                                 // blade templates
+```
+
+> Notice the special '|' character that can be used to test multiple (ORed) permissions in a single gate.  This is an extension to Laravel's normal functionality.
+
+More complex restrictions-field checking/filtering has currently only been implemented in the front-end (see next section)... but in the mean-time we could potentially use something like this:   (UNTESTED)
 
 ```php
 if (Gate::allows('use-app'))
@@ -110,7 +154,9 @@ if (Gate::allows('use-app'))
     // ALLOW/DENY STUFF FROM HAPPENING
 ```
 
-## Usage - Vue front-end
+
+
+## Extended Usage: Vue front-end
 
 `LaravelUserPermissions.js` is a helper library that allows permission-checks to be performed in the front-end.  
 
@@ -181,57 +227,22 @@ The remaining fields (ie: *fields* and *filter* in this example) are directly co
 ...
 ```
 
-## Usage in different packages that require auth
 
-* To allow the `owen-it/laravel-auditing` package to use the new guards you should replace in `config/audit.php`. Replace the guards use by the user
 
-```diff
-    'user' => [
-        'morph_prefix' => 'user',
-        'guards' => [
--           'web',
--           'api',
-+           'ffm-session-guard',
-+           'ffm-token-guard',
-        ],
-    ],
-```
+----
 
-* Change `config/larecipe.php`
+[^1]: Rationale for moving away from the official [Laravel SDK](https://github.com/auth0/laravel-auth0) (`auth0/login` package) provided by Auth0:
+  We developed our own simple Auth0 package for Laravel (in v4.0.0) after spending a many hours re-integrating this pattern (and all of our Laravel apps) to retain compatibility with the changing patterns used in each major update of Auth0's official Laravel package. 
 
-```diff
-//Documentation Routes
+  Our applications are stateful "PHP Web Applications" (rather than stateless "PHP Backend APIs" interfacing to an SPA with JWTs), and we did not need a lot of the advanced features included in the Laravel SDK - which tended to increase the compexity unnecessarily and proved a source of pain to reintegrate with each major update.
 
-'docs' => [
-        'route' => '/docs',
-        'path' => '/resources/docs',
-        'landing' => 'sched-editor-colour-schemes',
--       'middleware' => ['web'],
-+       'middleware' => ['web_group'],
-    ],
-   ...
-   'settings' => [
-        'auth' => false,
-        'guard' => null,
-        'ga_id' => '',
-        'middleware' => [
--           'web',
-+           'web_group',
-        ],
+  A significant source of pain has been that the "user provider" for the Auth0 package does not (by default) provide a regular Eloquent model... and we found the hard way that many packages (including Laravel Nova) tend to break when something other than a is returned by a user provider.
 
-```
+  Recent versions of the Auth0 package have improved compatibiliy for providing genuine Eloquent models, and have removed the need for many of the hacks we had to apply in earlier versions, however after spending many hours creating v3.0.0 of our package to align with improved design patterns in Auth0's package we realised that our User Repository is still building layers of complexity on top of an already-complex solution.
 
-* Change `config/nova.php`
+  Comparing these many complex layers with the simplicity of [Auth0's PHP QuickStart](https://auth0.com/docs/quickstart/webapp/php), our [laravel-**simple-auth0**](https://github.com/faithfm/laravel-simple-auth0) package now uses Auth0 **only** to validate a user and provide us a unique *'sub'* identifier.  This identifier is then used to retrieve a User model... which is passed to Laravel's built-in SessionGuard... which retrieves this same user model for subsequent authentication requests for the duration of a valid session.
 
-```diff
-... 
-//Nova Route Middleware
-'middleware' => [
--       'web',
-+       'web_group',
-        HandleInertiaRequests::class,
-        DispatchServingNovaEvent::class,
-        BootTools::class,
-    ],
-```
+
+
+
 
