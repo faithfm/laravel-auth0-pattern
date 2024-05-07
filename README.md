@@ -27,7 +27,7 @@ Our pattern:
 
 The key files required/provided are:
 
-![structure-of-pattern](docs/structure-of-pattern.jpg)
+[![structure-of-pattern](docs/structure-of-pattern.png)](docs/structure-of-pattern.png)
 
 
 
