@@ -4,7 +4,7 @@
 
 An opinionated library/pattern for Laravel Authentication (AuthN) and Authorisation (AuthZ) - designed to improve consistency across our Faith FM Laravel/Vue projects.
 
-Much of the functionality of our pattern is now contained in **3x reusable packages** that will be of more widespread interest to other developers:
+Much of the functionality of our pattern is now delegated to **3x reusable packages**. These child packages are less opinionated and will be of more widespread interest to other developers:
 
 * [laravel-**simple-auth0**](https://github.com/faithfm/laravel-simple-auth0) - simple **session**-based Authentication using **Auth0**.
   
@@ -25,7 +25,7 @@ Our pattern:
 
 
 
-The key files required/provided are:
+The structure of the key files provided by this package (and each of the child packages) is:
 
 [![structure-of-pattern](docs/structure-of-pattern.png)](https://www.canva.com/design/DAGEfYrNYng/rDMsUUS3jrcCMHGQLHMu3g/edit)
 
@@ -39,7 +39,9 @@ The key files required/provided are:
 
 * Configure Auth0 *(including allowed callback routes)* and add Auth0 settings to your **.env** file:    
 
-  *(It's wise to update **.env.example** template too.  See [faithfm/**laravel-simple-auth0**](https://github.com/faithfm/laravel-simple-auth0?tab=readme-ov-file#configuration) package for further details regarding Auth0 configuration, etc.)*
+> [!TIP]
+>
+> *(It's wise to update **.env.example** template too.  See [faithfm/**laravel-simple-auth0**](https://github.com/faithfm/laravel-simple-auth0?tab=readme-ov-file#configuration) package for further details regarding Auth0 configuration, etc.)*
 
   ```php
   AUTH0_DOMAIN=XXXX.xx.auth0.com
@@ -60,11 +62,11 @@ The key files required/provided are:
 
 * Assign permissions to users via the `user_permissions` table:
 
-  *(The 'restrictions' column is a JSON field that can **optionally** be used to define specific restrictions/qualifications to a privilege.  Ie: our Media project uses 'filter' and 'fields' to restrict users to editing specific files/fields.)*
+> [!NOTE]
+>
+>*The 'restrictions' column is a JSON field that can **optionally** be used to define specific restrictions/qualifications to a privilege.  Ie: our Media project uses 'filter' and 'fields' to restrict users to editing specific files/fields.*
 
-<img align="left" src="docs/user_permissions-table.jpg" alt="user_permissions-table" />
-
-
+![user_permissions-table](docs/user_permissions-table.jpg)
 
 ## How It Works
 
@@ -144,6 +146,8 @@ Gate::authorize('use-app');                     // protect elsewhere (ie: contro
 @can('use-app')                                 // blade templates
 ```
 
+> [!IMPORTANT]
+> 
 > Notice the special '|' character that can be used to test multiple (ORed) permissions in a single gate.  This is an extension to Laravel's normal functionality.
 
 More complex restrictions-field checking/filtering has currently only been implemented in the front-end (see next section)... but in the mean-time we could potentially use something like this:   (UNTESTED)
@@ -203,6 +207,8 @@ The value of the *status* field will be:
 
 The remaining fields (ie: *fields* and *filter* in this example) are directly copied from the *'restrictions'* JSON data in the database.
 
+> [!IMPORTANT]
+> 
 > REMINDER: according to good security practice you should not rely only upon front-end checks to enforce security, but should perform security checks in the back-end too.
 
 ## Sample code to pass permissions via LaravelAppGlobals to front-end

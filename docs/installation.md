@@ -10,8 +10,7 @@ php artisan vendor:publish --tag=laravel-auth0-pattern --force
 php artisan migrate
 ```
 
-See [pattern structure diagram](structure-of-pattern.jpeg) for information about published files and migrations.
-
+See [pattern structure diagram](structure-of-pattern.png) for information about published files and migrations.
 
 
 ## Manual Configuration:

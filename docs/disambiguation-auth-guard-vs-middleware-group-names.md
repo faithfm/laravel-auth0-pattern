@@ -1,4 +1,4 @@
-## Disambiguation of "Authentication Guard" and "Route Middleware Group" names
+# Disambiguation of "Authentication Guard" and "Route Middleware Group" names
 
 Laravel unfortunately re-uses the names *'web'* and *'api'* for both "Authentication Guards" and "Route Middleware Groups".
 
@@ -18,5 +18,5 @@ This creates quite a bit of confusion, and furthermore the brevity (and lack of 
 
   * **'api'** (Laravel default) --> **'api_group'** (v2.2.0) --> **'web'** (v4.0.0)
 
-Apart from remembering to rename these in our own codebase, these names often appear in config files for the [external packages](docs/external-package-config.md) we use.
+Apart from remembering to rename these in our own codebase, these names often appear in config files for the [external packages](external-package-config.md) we use.
 

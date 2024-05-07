@@ -30,9 +30,18 @@ Uninstall then re-install the package to load it from packagist:
 ```bash
 composer remove faithfm/laravel-auth0-pattern
 composer require faithfm/laravel-auth0-pattern
+php artisan vendor:publish --tag=laravel-simple-permissions --force
+php artisan vendor:publish --tag=laravel-auth0-pattern --force
 ```
 
-
+### Migrating from v2
+Be sure to update:
+* The [Auth Middleware](https://github.com/faithfm/laravel-auth0-pattern/blob/lidiaordonez-patch-1/docs/update-notes-v3.md#auth-middleware)
+* The [.env file](https://github.com/faithfm/laravel-auth0-pattern/blob/lidiaordonez-patch-1/docs/update-notes-v3.md#env-file)
+* The [new callback url](https://github.com/faithfm/laravel-auth0-pattern/blob/lidiaordonez-patch-1/docs/update-notes-v3.md#new-callback-url)
+* The change in the [blade file](https://github.com/faithfm/laravel-auth0-pattern/blob/lidiaordonez-patch-1/docs/update-notes-v3.md#blade-files)
+* If you are using Nova, this [change](https://github.com/faithfm/laravel-auth0-pattern/blob/lidiaordonez-patch-1/docs/update-notes-v3.md#nova) is needed
+  
 
 ### Login/logout/callback Route Registration:
 
@@ -59,14 +68,25 @@ Revert the dual-web+api middleware groups in app/Providers/**RouteServiceProvide
 public function boot()
 
 // FOR LARAVEL 8
+        Route::prefix('web')
+-            ->middleware('web_guard')
++            ->middleware('web')
+            ->group(base_path('routes/web.php'));
+...
         Route::prefix('api')
--            ->middleware('api')
-+            ->middleware(['web', 'api'])
+-            ->middleware(['web_guard', 'api_guard'])
++            ->middleware('api')
             ->group(base_path('routes/api.php'));
 
+
 // FOR LARAVEL 9 + 10
--       Route::middleware('api')
-+       Route::middleware(['web', 'api'])
+-       Route::middleware('web_guard')
++       Route::middleware('web')
+            ->prefix('web')
+            ->group(base_path('routes/web.php'));
+...
+-       Route::middleware(['web_guard', 'api_guard'])
++       Route::middleware('api')
             ->prefix('api')
             ->group(base_path('routes/api.php'));
 ```
@@ -79,27 +99,30 @@ Replace the *web* + *api* route middleware definitions in app/Http/**Kernel.php*
 
 ```diff
 protected $middlewareGroups = [
-    'web' => [
+-   'web_guard' => [
++   'web' => [
         \App\Http\Middleware\EncryptCookies::class,
         \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
         // \Illuminate\Session\Middleware\StartSession::class,          // replace Laravel default with...
-        \FaithFM\SimpleAuthTokens\Http\Middleware\StartSession::class,  // ...FaithFM\SimpleAuthTokens class - which prevents creation of (numerous) session files for requests containing 'api_token=XXXX'  (ie: clients without support for cookies will normally result in creation of a session-file for every API call - potentially resulting in hundreds/thousands of session-files)
+-       \FaithFM\Auth0Pattern\Http\Middleware\StartSession::class,
++       \FaithFM\SimpleAuthTokens\Http\Middleware\StartSession::class,  // ...FaithFM\SimpleAuthTokens class - which prevents creation of (numerous) session files for requests containing 'api_token=XXXX'  (ie: clients without support for cookies will normally result in creation of a session-file for every API call - potentially resulting in hundreds/thousands of session-files)
         \App\Http\Middleware\VerifyCsrfToken::class,
         \Illuminate\Routing\Middleware\SubstituteBindings::class,
         \App\Http\Middleware\HandleInertiaRequests::class,
     ],
     
-    'api' => [
+-   'api_guard' => [
++   'api' => [
         // \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
         \Illuminate\Routing\Middleware\ThrottleRequests::class.':api',
         \Illuminate\Routing\Middleware\SubstituteBindings::class,
         
-        // OPTIONAL session-related middleware for API routes - recommended by FaithFM\SimpleAuthTokens
-        \App\Http\Middleware\EncryptCookies::class,
-        \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
-        \FaithFM\SimpleAuthTokens\Http\Middleware\StartSession::class,		// FaithFM\SimpleAuthTokens class
-        \Illuminate\View\Middleware\ShareErrorsFromSession::class,
-        \App\Http\Middleware\VerifyCsrfToken::class,
++       // OPTIONAL session-related middleware for API routes - recommended by FaithFM\SimpleAuthTokens
++       \App\Http\Middleware\EncryptCookies::class,
++       \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
++       \FaithFM\SimpleAuthTokens\Http\Middleware\StartSession::class,		// FaithFM\SimpleAuthTokens class
++       \Illuminate\View\Middleware\ShareErrorsFromSession::class,
++       \App\Http\Middleware\VerifyCsrfToken::class,
     ],
 ],
 ```
@@ -173,6 +196,3 @@ Test valid migration status with:
 php artisan migrate:status
 ```
 
-
-
-### 
