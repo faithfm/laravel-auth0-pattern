@@ -27,7 +27,7 @@ Our pattern:
 
 The key files required/provided are:
 
-[![structure-of-pattern](docs/structure-of-pattern.png)](docs/structure-of-pattern.png)
+[![structure-of-pattern](docs/structure-of-pattern.png)](https://www.canva.com/design/DAGEfYrNYng/rDMsUUS3jrcCMHGQLHMu3g/edit)
 
 
 
