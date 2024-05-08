@@ -60,6 +60,13 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     ];
 
     /**
+     * The permissions relationship should be eager-loaded.
+     *
+     * @var array
+     */
+    protected $with = ['permissions'];
+
+    /**
      * Get the permissions for the user.
      * See: faithfm/laravel-simple-permissions package
      */
