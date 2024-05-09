@@ -13,6 +13,10 @@ In v4.0.0 we:
 
 ## Changes Required:
 
+### Remove files that if left will not allow the update
+
+* `config/auth0.php`
+
 ### Composer VCS Requirement Dropped:
 
 Remove the VCS package definition from `composer.json`:
@@ -41,6 +45,7 @@ Be sure to update:
 * The [new callback url](https://github.com/faithfm/laravel-auth0-pattern/blob/lidiaordonez-patch-1/docs/update-notes-v3.md#new-callback-url)
 * The change in the [blade file](https://github.com/faithfm/laravel-auth0-pattern/blob/lidiaordonez-patch-1/docs/update-notes-v3.md#blade-files)
 * If you are using Nova, this [change](https://github.com/faithfm/laravel-auth0-pattern/blob/lidiaordonez-patch-1/docs/update-notes-v3.md#nova) is needed
+* Also check any [other package](https://github.com/faithfm/laravel-auth0-pattern/blob/lidiaordonez-patch-1/docs/update-notes-v3.md#other-packages) that is using legacy `'web_guard'` and  `'api_guard'` guards
   
 
 ### Login/logout/callback Route Registration:
@@ -62,7 +67,9 @@ SimpleAuth0ServiceProvider::registerLoginLogoutCallbackRoutes();
 
 Revert the dual-web+api middleware groups in app/Providers/**RouteServiceProvider.php**:
 
-*(Note: slightly different syntax for Laravel 8 vs 9)*
+>[!NOTE]
+>
+>*Slightly different syntax for Laravel 8 vs 9*
 
 ```diff
 public function boot()
@@ -93,7 +100,7 @@ public function boot()
 
 
 
-### Route Middeware Definitions:
+### Route Middleware Definitions:
 
 Replace the *web* + *api* route middleware definitions in app/Http/**Kernel.php** with the updated definitions from the installation instructions:  (Revert naming of 'web_group' + 'api_group', use StartSession from SimpleAuthTokens, and add session-middleware to *api* middleware)
 
