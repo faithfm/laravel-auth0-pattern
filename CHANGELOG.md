@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 No unreleased changes
 
+# 4.0.0 - 2024-05-10
+
+MAJOR v4 update - move away from `auth0/login` and create 3x of our own reusable child packages:
+
+* Moved away from the official `auth0/login` (Auth0 Laravel SDK) in favour of our own simpler auth0 package.  Login/logout/callback route registration is now manually added to routes/**web.php**.
+* Split the functionality of the package into 3x child packages which are now dependencies of this package.
+* Created a proper packagist compose package `faithfm/laravel-auth0-pattern` (no need for composer VCS references).
+* Reverted **route middleware group** names back to Laravel defaults - see [Disambiguation of "Authentication Guard" and "Route Middleware Group" names](disambiguation-auth-guard-vs-middleware-group-names.md).
+  * 'web' (Laravel default) --> 'web_group' (v2.2.0) --> 'web' (v4.0.0)
+  * 'api' (Laravel default) --> 'api_group' (v2.2.0) --> 'web' (v4.0.0)
+* Moved the addition of session-based API middleware from app/Providers/**RouteServiceProvider.php** to app/Http/**Kernel.php**.
+* Renamed database migrations when the packages were split.  Manual editing of the *'migrations'* table is required.
+* Major rewrite (and cleanup) of documentation.
+
+
 # 3.0.0 - 2024-04-18
 
 * Major revision of our pattern as we update the auth0/login package from v7.6.0 to v7.12.0  (v7.8.0 was where their major update occurred).
