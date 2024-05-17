@@ -76,6 +76,21 @@ This should looks something like this:
     <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
 ```
 
+### Move `defined-permissions`
+Check `app/Repositories/AuthPermissionList.php` and move permissions to `config\auth.php` to be registered here...
+```
+'defined_permissions' => [
+        'use-app',                  // minimum permission to use the app
+        'admin-app',                // master admin privilege
+    //  'edit-catalog',             // for catalog editors  (assuming you're writing a catalogue application)
+    .... //Add permissions here
+    ],
+```
+
+...check for any other Legacy references to `AuthPermissionList.php` (ie: Nova permissions, etc)... then delete it from the project.
+
+
+
 ### Nova
 
 In projects that use Laravel Nova, in  `config/nova.php` revert the reference to the temporary PatchedAuthenticationMiddleware class which is no longer required: 

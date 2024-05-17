@@ -45,6 +45,7 @@ Be sure to apply the following v3.x-related manual updates:
 * The [.env file](https://github.com/faithfm/laravel-auth0-pattern/blob/master/docs/update-notes-v3.md#env-file)
 * The [new callback url](https://github.com/faithfm/laravel-auth0-pattern/blob/master/docs/update-notes-v3.md#new-callback-url)
 * The change in the [blade file](https://github.com/faithfm/laravel-auth0-pattern/blob/master/docs/update-notes-v3.md#blade-files)
+* Register [`defined_permission`](https://github.com/faithfm/laravel-auth0-pattern/blob/master/docs/update-notes-v3.md#move-defined-permissions) in `config/auth.php
 * If you are using Nova, this [change](https://github.com/faithfm/laravel-auth0-pattern/blob/master/docs/update-notes-v3.md#nova) is needed
 * Also check any [other package](https://github.com/faithfm/laravel-auth0-pattern/blob/master/docs/update-notes-v3.md#other-packages) that is using legacy `'web_guard'` and  `'api_guard'` guards
   

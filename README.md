@@ -142,7 +142,10 @@ Check for **permissions** (AuthZ) using the [Authorization Gates](https://larave
 $allowed = Gate::allows('use-app');             // simple test
 $allowed = Gate::allows('use-app|edit-assets'); // ORed permissions (SPECIAL FEATURE)
 ...->middleware('can:use-app');                 // protect in route definitions
-Gate::authorize('use-app');                     // protect elsewhere (ie: controllers)
+Gate::authorize('use-app|admin-app');           // protect elsewhere (ie: controllers)
+if (Gate::none(['use-app', 'admin-app'])) {     // ditto - but manually aborting (instead of relying on "401 vs redirect" recommendation - see installation.md)
+    abort(403);
+}
 @can('use-app')                                 // blade templates
 ```
 

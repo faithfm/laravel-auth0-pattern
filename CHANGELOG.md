@@ -7,7 +7,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 No unreleased changes
 
-# 4.0.0 - 2024-05-10
+## 4.0.1 - 2024-05-17
+
+Minor documentation improvements and corrections
+
+
+## 4.0.0 - 2024-05-10
 
 MAJOR v4 update - move away from `auth0/login` and create 3x of our own reusable child packages:
 
@@ -22,7 +27,7 @@ MAJOR v4 update - move away from `auth0/login` and create 3x of our own reusable
 * Major rewrite (and cleanup) of documentation.
 
 
-# 3.0.0 - 2024-04-18
+## 3.0.0 - 2024-04-18
 
 * Major revision of our pattern as we update the auth0/login package from v7.6.0 to v7.12.0  (v7.8.0 was where their major update occurred).
 * Update config/auth.php and config/auth0.php to work with new Laravel and Auth0 template settings
