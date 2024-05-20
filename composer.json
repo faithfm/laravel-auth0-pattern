@@ -24,9 +24,9 @@
         "laravel/framework": "^9.0|^10.0",
         "owen-it/laravel-auditing": ">=12.0",
         "guzzlehttp/guzzle": ">7.0",
-        "faithfm/laravel-simple-auth0": "^1.0",
-        "faithfm/laravel-simple-auth-tokens": "^1.0",
-        "faithfm/laravel-simple-permissions": "^1.0"
+        "faithfm/laravel-simple-auth0": "^1.0.2",
+        "faithfm/laravel-simple-auth-tokens": "^1.0.2",
+        "faithfm/laravel-simple-permissions": "^1.0.2"
     },
     "autoload": {
         "psr-4": {
